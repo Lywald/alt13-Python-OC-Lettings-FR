@@ -1,10 +1,31 @@
 """Django settings for the oc_lettings_site project."""
+import logging
 import os
 
 from pathlib import Path
 
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+# Sentry — error and performance monitoring.
+# The DSN (API key) is read from the environment so it is never committed.
+# If SENTRY_DSN is unset, init() becomes a no-op and nothing is sent.
+sentry_sdk.init(
+    dsn=os.environ.get('SENTRY_DSN'),
+    integrations=[
+        DjangoIntegration(),
+        # INFO and above are recorded as breadcrumbs; ERROR and above are
+        # additionally sent to Sentry as events.
+        LoggingIntegration(level=logging.INFO, event_level=logging.ERROR),
+    ],
+    traces_sample_rate=1.0,
+    send_default_pii=True,
+)
 
 
 # Quick-start development settings - unsuitable for production
@@ -115,3 +136,31 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "static",]
+
+
+# Logging
+# https://docs.djangoproject.com/en/3.0/topics/logging/
+# Sentry's LoggingIntegration hooks the logging module directly, so any record
+# emitted by these loggers is forwarded to Sentry per the levels set above.
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {name} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        # Application loggers. Replicate this for any module that logs.
+        'lettings': {'handlers': ['console'], 'level': 'INFO', 'propagate': False},
+        'profiles': {'handlers': ['console'], 'level': 'INFO', 'propagate': False},
+        'oc_lettings_site': {'handlers': ['console'], 'level': 'INFO', 'propagate': False},
+    },
+}

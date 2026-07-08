@@ -1,7 +1,11 @@
 """Views for listing lettings and displaying letting details."""
+import logging
+
 from django.shortcuts import render
 
 from .models import Letting
+
+logger = logging.getLogger(__name__)
 
 
 def index(request):
@@ -13,9 +17,18 @@ def index(request):
 
 def letting(request, letting_id):
     """Render the details of a single letting identified by its id."""
-    letting = Letting.objects.get(id=letting_id)
+    logger.info("Fetching letting id=%s and its address", letting_id)
+    try:
+        letting = Letting.objects.get(id=letting_id)
+    except Letting.DoesNotExist:
+        # ERROR level -> sent to Sentry as an event.
+        logger.error("Letting id=%s does not exist", letting_id)
+        raise
+
+    address = letting.address
+    logger.info("Serving letting '%s' at address '%s'", letting.title, address)
     context = {
         'title': letting.title,
-        'address': letting.address,
+        'address': address,
     }
     return render(request, 'lettings/letting.html', context)

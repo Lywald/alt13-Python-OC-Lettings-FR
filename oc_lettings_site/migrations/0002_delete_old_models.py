@@ -7,6 +7,9 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("oc_lettings_site", "0001_initial"),
+        # Ensure data is copied to the new apps before the old models are dropped.
+        ("lettings", "0002_copy_data"),
+        ("profiles", "0002_copy_data"),
     ]
 
     operations = [
