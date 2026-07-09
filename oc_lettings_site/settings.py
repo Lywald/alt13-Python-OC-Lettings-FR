@@ -5,18 +5,23 @@ import os
 from pathlib import Path
 
 import sentry_sdk
+from dotenv import load_dotenv
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load environment variables from a local .env file (ignored by git).
+# Real values come from the environment in production; .env is dev-only.
+load_dotenv(BASE_DIR / '.env')
+
 
 # Sentry — error and performance monitoring.
 # The DSN (API key) is read from the environment so it is never committed.
 # If SENTRY_DSN is unset, init() becomes a no-op and nothing is sent.
 sentry_sdk.init(
-    dsn=os.environ.get('SENTRY_DSN'),
+    dsn=os.environ.get('SENTRY_DSN') or None,
     integrations=[
         DjangoIntegration(),
         # INFO and above are recorded as breadcrumbs; ERROR and above are
