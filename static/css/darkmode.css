@@ -1,0 +1,66 @@
+/*
+ * Dark mode overrides — loaded after styles.css so these rules win.
+ * Palette: near-black surfaces, warm light text, the site's burnt-orange
+ * primary (#a22b02) kept for buttons and brightened for links.
+ */
+
+body {
+    background-color: #14161a;
+    color: #e6e4e0;
+}
+
+/* Navbar: the template uses .bg-white (a Bootstrap !important utility) */
+.navbar.bg-white {
+    background-color: #1c1f24 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.navbar-light .navbar-brand {
+    color: #e6e4e0;
+}
+
+hr {
+    border-color: rgba(255, 255, 255, 0.15);
+    opacity: 1;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6,
+.page-header-ui-title,
+.display-6 {
+    color: #f2efec;
+}
+
+/* Links: brightened primary for contrast on dark backgrounds */
+a {
+    color: #ff8a5c;
+}
+
+a:hover {
+    color: #ffab85;
+}
+
+/* Buttons keep the brand orange; just make focus visible on dark */
+.btn-primary:focus,
+.btn-primary.focus {
+    box-shadow: 0 0 0 0.2rem rgba(255, 138, 92, 0.4);
+}
+
+/* Cards (letting and profile detail pages) */
+.card {
+    background-color: #1c1f24;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #e6e4e0;
+}
+
+/* List groups (lettings and profiles index pages) */
+.list-group-item {
+    background-color: transparent;
+    color: #e6e4e0;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Footer: already dark, aligned with the page background */
+.footer.bg-dark {
+    background-color: #0f1113 !important;
+}
