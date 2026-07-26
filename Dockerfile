@@ -14,7 +14,8 @@ RUN python manage.py collectstatic --noinput
 EXPOSE 8000
 
 # Setup an app user so the container doesn't run as the root user
-RUN useradd app
+# RUN useradd app
+RUN useradd app && chown -R app:app /usr/local/app
 USER app
 
 CMD ["gunicorn", "oc_lettings_site.wsgi:application", "--bind", "0.0.0.0:8000"]
