@@ -1,10 +1,2 @@
-from django.contrib import admin
-
-from .models import Letting
-from .models import Address
-from .models import Profile
-
-
-admin.site.register(Letting)
-admin.site.register(Address)
-admin.site.register(Profile)
+"""Admin registration for the oc_lettings_site project."""
+from django.contrib import admin  # noqa: F401

@@ -1,0 +1,23 @@
+# Git et outils
+.git
+.gitignore
+.agents
+Dockerfile
+.dockerignore
+
+# Environnement virtuel et caches Python
+venv
+staticfiles
+**/__pycache__
+*.pyc
+.pytest_cache
+.coverage
+
+# Secrets — ne doivent jamais entrer dans l'image
+.env
+
+# Documentation et copies de sauvegarde
+docss
+README.md
+oc-lettings-site - BACKUP.sqlite3
+oc-lettings-site - Copy.sqlite3
