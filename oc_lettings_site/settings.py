@@ -36,14 +36,50 @@ sentry_sdk.init(
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'fp$9^593hsriajg$_%=5trot9g!1qa@ew(o-1#@=&4%=hp46(s'
+# Render and other production platforms provide these settings through
+# environment variables. Local development remains usable without a .env file.
+DEBUG = os.environ.get('DEBUG', 'True').strip().lower() in (
+    '1',
+    'true',
+    'yes',
+    'on',
+)
 
-# SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
-# ALLOWED_HOSTS = []
-DEBUG = True
-ALLOWED_HOSTS = [] #'localhost', '127.0.0.1']
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.environ.get('SECRET_KEY')
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = 'django-insecure-development-only-key'
+    else:
+        raise RuntimeError('SECRET_KEY must be set when DEBUG is False.')
+
+_allowed_hosts = os.environ.get('ALLOWED_HOSTS', '')
+if _allowed_hosts:
+    ALLOWED_HOSTS = [
+        host.strip()
+        for host in _allowed_hosts.split(',')
+        if host.strip()
+    ]
+elif DEBUG:
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]']
+else:
+    raise RuntimeError('ALLOWED_HOSTS must be set when DEBUG is False.')
+
+# Django 3.0 expects host names here, whereas recent deployment dashboards
+# commonly document complete origins such as "https://example.onrender.com".
+# Accept both formats and normalize them to the Django 3.0 representation.
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip().split('://', 1)[-1]
+    for origin in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
+    if origin.strip()
+]
+
+# Render terminates HTTPS before forwarding the request to Gunicorn.
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = not DEBUG
+SECURE_REFERRER_POLICY = 'same-origin'
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
 
 # Application definition
 
@@ -141,7 +177,7 @@ USE_TZ = True
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "static",]
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 
 # Logging
