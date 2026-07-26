@@ -142,3 +142,24 @@ utiliser une solution de stockage persistant compatible avec l'offre Render.
 
 Une instance Free peut egalement se mettre en veille apres une periode
 d'inactivite. La premiere requete suivante peut donc etre plus lente.
+
+
+7. COHERENCE DES MODELES ET DES MIGRATIONS DANS LA CI
+-----------------------------------------------------
+
+Le projet utilise Django 3.0. Les migrations initiales de lettings et profiles
+declarent les cles primaires avec models.BigAutoField, mais cette version de
+Django ne prend pas encore en charge default_auto_field dans AppConfig comme
+les versions recentes.
+
+Les champs id de Address, Letting et Profile sont donc declares explicitement
+avec models.BigAutoField dans les modeles. Les options auto_created,
+primary_key, serialize et verbose_name reproduisent exactement l'etat inscrit
+dans les migrations initiales. Cette declaration conserve les modeles alignes
+avec les migrations et permet a la commande suivante de reussir sans generer
+de migration artificielle :
+
+    python manage.py makemigrations --check --dry-run
+
+Ne pas retirer ces champs id sans mettre a niveau Django et verifier
+l'historique complet des migrations ainsi que la base de donnees existante.
