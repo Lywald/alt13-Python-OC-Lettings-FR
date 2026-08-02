@@ -3,3 +3,4 @@
 venv
 docss/
 .env
+docs/_build/
